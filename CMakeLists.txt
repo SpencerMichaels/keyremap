@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.2)
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+  message(FATAL_ERROR "\
+Can't build here! Create a build directory outside of the source tree and \
+call CMake from there.\
+  ")
+endif()
+
+project(keyremap VERSION 1.0.0)
+
+set(PROJECT_AUTHOR "Spencer Michaels")
+set(PROJECT_AUTHOR_EMAIL "spencer@smichaels.net")
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(keyremap
+    include/DeviceFilter.hpp src/DeviceFilter.cpp
+    include/DeviceInstance.hpp src/DeviceInstance.cpp
+    include/KeyMapper.hpp src/KeyMapper.cpp
+    main.cpp)
+
+target_include_directories(keyremap PRIVATE "/usr/include/libevdev-1.0") # TODO: temporary, automate this later
+target_include_directories(keyremap PUBLIC include)
+target_link_libraries(keyremap udev evdev)
+
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VENDOR ${PROJECT_AUTHOR})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CPACK_PACKAGE_FILE_NAME}-src)
+set(CPACK_RESOURCE_FILE_LICENSE ${udevw_SOURCE_DIR}/LICENSE)
+set(CPACK_RESOURCE_FILE_README ${udevw_SOURCE_DIR}/README.md)
+set(CPACK_GENERATOR TGZ)
+set(CPACK_SOURCE_GENERATOR TGZ)
+set(CPACK_PACKAGING_INSTALL_DIRECTORY "udevw-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+
+include(CPack)
+

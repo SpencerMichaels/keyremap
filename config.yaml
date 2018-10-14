@@ -1,0 +1,27 @@
+settings:
+  on_combined_timeout: 200
+
+rules:
+- name: caps_to_ctrl_esc
+  mappings:
+  - from: KEY_CAPSLOCK
+    to: KEY_CTRL
+    to_if_alone: KEY_ESC
+  - from: KEY_ESC
+    to: KEY_CAPSLOCK
+- name: shifts_to_parens
+  mappings:
+  - from: KEY_LSHIFT
+    to: KEY_LSHIFT
+    to_if_alone: KEY_KPLEFTPAREN
+  - from: KEY_RSHIFT
+    to: KEY_RSHIFT
+    to_if_alone: KEY_KPRIGHTPAREN
+
+devices:
+- name: keyboard
+  filters:
+    - name: keyboard
+  rules:
+    - caps_to_ctrl_esc
+    - shifts_to_parens
