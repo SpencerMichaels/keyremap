@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   const auto devices = enumerate.scan_devices();
 
   krm::DeviceFilter::Criteria criteria;
-  criteria.name.assign(".*keyboard.*");
+  criteria.name.assign(".*Gaming Mouse.*");
 
   krm::DeviceFilter filter(criteria);
 
@@ -67,21 +67,25 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "===== Running =====" << std::endl;
-  while (true) {
-    for (auto &devinst : _instances) {
-      devinst->process_event([&](auto &proxy, const auto &event) {
-        std::visit([](const auto &event) {
-          std::cout << event.get_type_name() << " "
-                    << event.get_code_name() << " "
-                    << event.get_raw_value() << std::endl;
-        }, event);
+  try {
+    while (true) {
+      for (auto &devinst : _instances) {
+        devinst->process_event([&](auto &proxy, const auto &event) {
+          std::visit([](const auto &event) {
+            std::cout << event.get_type_name() << " "
+                      << event.get_code_name() << " "
+                      << event.get_raw_value() << std::endl;
+          }, event);
 
-        if (std::holds_alternative<evdevw::event::Key>(event)) {
-          mapper(proxy, std::get<evdevw::event::Key>(event));
-        } else {
-          proxy.write_event(std::move(event));
-        }
-      });
+          if (std::holds_alternative<evdevw::event::Key>(event)) {
+            mapper(proxy, std::get<evdevw::event::Key>(event));
+          } else {
+            proxy.write_event(std::move(event));
+          }
+        });
+      }
     }
+  } catch (const evdevw::Exception &e) {
+    std::cout << std::strerror(e.get_error()) << std::endl;
   }
 }
